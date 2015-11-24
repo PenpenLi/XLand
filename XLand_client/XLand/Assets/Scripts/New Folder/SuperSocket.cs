@@ -43,7 +43,7 @@ public class SuperSocket {
 
 	private int bodyOffset;
 
-	private List<BaseProto> receivePool;
+	private List<Action> receivePool = new List<Action>();
 
 	private MemoryStream receiveStream = new MemoryStream();
 	
@@ -57,20 +57,49 @@ public class SuperSocket {
 
 	private List<BaseProto> sendPool = new List<BaseProto>();
 
-	public void Connect(string _ip,int _port,Action _callBack,List<BaseProto> _pool){
+	private List<Action<BaseProto>> callBackPool = new List<Action<BaseProto>> ();
 
-		receivePool = _pool;
+	private Action<BaseProto> nowCallBack;
+
+	private Dictionary<Type,Action<BaseProto>> pushDic = new Dictionary<Type, Action<BaseProto>> ();
+
+	public SuperSocket(){
+
+		GameObject go = new GameObject ("SuperSocketGameObject");
+
+		SuperSocketScript script = go.AddComponent<SuperSocketScript> ();
+
+		script.Init (receivePool);
+
+		GameObject.DontDestroyOnLoad(go);
+	}
+
+	public void Connect(string _ip,int _port,Action _callBack){
 
 		socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
 		IPEndPoint ipe = new IPEndPoint (IPAddress.Parse (_ip), _port);
 
-		socket.BeginConnect (ipe, ConnectEnd, null);
+		socket.BeginConnect (ipe, ConnectEnd, _callBack);
+	}
+
+	public void RegisterPushDataCallBack<T>(Action<T> _callBack) where T : BaseProto{
+
+		Action<BaseProto> tmpCallBack = delegate(BaseProto obj) {
+
+			_callBack (obj as T);
+		};
+
+		pushDic.Add (typeof(T), tmpCallBack);
 	}
 
 	private void ConnectEnd(IAsyncResult _result){
 
 		socket.EndConnect (_result);
+
+		Action callBack = _result.AsyncState as Action;
+
+		callBack ();
 
 		headLength = HEAD_LENGTH;
 		
@@ -156,7 +185,21 @@ public class SuperSocket {
 			case PROTO_TYPE.S2C:
 
 				BaseProto sendData = null;
+
+				Action<BaseProto> tmpCallBack = nowCallBack;
 				
+				nowCallBack = null;
+				
+				Action callBack = delegate() {
+					
+					tmpCallBack(data);
+				};
+				
+				lock(receivePool){
+					
+					receivePool.Add(callBack);
+				}
+
 				lock(sendPool){
 
 					if(!isWaittingForResponse){
@@ -171,31 +214,53 @@ public class SuperSocket {
 						sendData = sendPool[0];
 						
 						sendPool.RemoveAt(0);
+
+						nowCallBack = callBackPool[0];
+
+						callBackPool.RemoveAt(0);
 						
 					}else{
 						
 						isWaittingForResponse = false;
 					}
 				}
-				
+
 				if (sendData != null) {
 					
 					SendDataReal (sendData);
 				}
 
 				break;
-			}
 
-			lock(receivePool){
+			default:
 
-				receivePool.Add(data);
+				Type protoType = data.GetType();
+
+				if(pushDic.ContainsKey(protoType)){
+
+					callBack = delegate() {
+
+						pushDic[protoType](data);
+					};
+
+					lock(receivePool){
+						
+						receivePool.Add(callBack);
+					}
+
+				}else{
+
+					SuperDebug.LogError("error669!");
+				}
+
+				break;
 			}
 
 			ReceiveHead ();
 		}
 	}
 
-	public void SendData(BaseProto _data){
+	public void SendData<T>(BaseProto _data,Action<T> _callBack) where T : BaseProto{
 
 		if (_data.type != PROTO_TYPE.C2S) {
 
@@ -204,17 +269,26 @@ public class SuperSocket {
 			return;
 		}
 
+		Action<BaseProto> callBack = delegate(BaseProto obj) {
+
+			_callBack(obj as T);
+		};
+
 		lock (sendPool) {
 
 			if (isWaittingForResponse) {
 
 				sendPool.Add (_data);
 
+				callBackPool.Add(callBack);
+
 				return;
 
 			} else {
 
 				isWaittingForResponse = true;
+
+				nowCallBack = callBack;
 			}
 		}
 
@@ -224,6 +298,8 @@ public class SuperSocket {
 	private void SendDataReal(BaseProto _data){
 
 		sendFormatter.Serialize(sendStream, _data);
+		
+		sendStream.Position = 0;
 
 		socket.BeginSend(BitConverter.GetBytes(sendStream.GetBuffer().Length), 0, 4, SocketFlags.None, SendHeadEnd, null);
 	}

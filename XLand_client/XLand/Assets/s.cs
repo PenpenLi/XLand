@@ -1,29 +1,57 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
+using XLand_proto;
+using SuperProto;
 
 public class s : MonoBehaviour {
 
-	public Color color;
+	InputField inputName;
+	InputField inputPwd;
 
-	private Material material;
+	void Start(){
 
-	// Use this for initialization
-	void Start () {
+		inputName = GameObject.Find ("InputName").GetComponent<InputField> ();
+		inputPwd = GameObject.Find ("InputPwd").GetComponent<InputField> ();
 
-		color = Color.white;
-	
-		material = GetComponent<MeshRenderer> ().material;
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-		material.SetColor ("_Color", color);
+		SuperSocket.Instance.Connect ("127.0.0.1", 1983, ConnectOK);
 	}
 
-	void OnMouseOver(){
+	private void ConnectOK(){
 
+		SuperDebug.Log ("ConnectOK");
+	}
 
-		Debug.Log ("over!");
+	public void Click(){
+
+		LoginProto login = new LoginProto ();
+
+		login.userName = inputName.text;
+
+		login.password = inputPwd.text;
+
+		SuperSocket.Instance.SendData<LoginResultProto> (login, LoginOver);
+	}
+
+	private void LoginOver(LoginResultProto _result){
+
+		SuperDebug.Log ("result:" + _result.result);
+	}
+
+	void Update(){
+
+		if(Input.GetKeyUp(KeyCode.A)){
+
+			TestProto ll = new TestProto();
+
+			ll.data = "plplpl";
+
+			SuperSocket.Instance.SendData<TestProto2>(ll,GetData);
+		}
+	}
+
+	private void GetData(TestProto2 dd){
+
+		SuperDebug.Log ("GetData:" + dd.data);
 	}
 }

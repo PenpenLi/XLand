@@ -1,0 +1,1 @@
+C:\UnityProjects\XLand\XLand_server\XLand_server\bin\Debug\XLand_server.exe.config

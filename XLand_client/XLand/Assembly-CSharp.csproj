@@ -47,6 +47,7 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\New Folder\NewBehaviourScript.cs" />
      <Compile Include="Assets\Scripts\New Folder\SuperSocket.cs" />
+     <Compile Include="Assets\Scripts\New Folder\SuperSocketScript.cs" />
      <Compile Include="Assets\Scripts\lib\animatorFactory\AnimatorFactory.cs" />
      <Compile Include="Assets\Scripts\lib\animatorFactory\AnimatorFactoryUnit.cs" />
      <Compile Include="Assets\Scripts\lib\assetBundleManager\AssetBundleManager.cs" />
@@ -170,6 +171,9 @@
  </Reference>
  <Reference Include="SuperProto">
  <HintPath>C:/UnityProjects/XLand/XLand_client/XLand/Assets/Scripts/New Folder/SuperProto.dll</HintPath>
+ </Reference>
+ <Reference Include="XLand_proto">
+ <HintPath>C:/UnityProjects/XLand/XLand_client/XLand/Assets/Scripts/New Folder/XLand_proto.dll</HintPath>
  </Reference>
  <Reference Include="Mono.Cecil">
  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/Mono.Cecil.dll</HintPath>
