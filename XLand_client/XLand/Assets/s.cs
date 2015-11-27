@@ -42,16 +42,14 @@ public class s : MonoBehaviour {
 
 		if(Input.GetKeyUp(KeyCode.A)){
 
-			TestProto ll = new TestProto();
+			UserDataProto ll = new UserDataProto();
 
-			ll.data = "plplpl";
-
-			SuperSocket.Instance.SendData<TestProto2>(ll,GetData);
+			SuperSocket.Instance.SendData<UserDataResultProto>(ll,GetData);
 		}
 	}
 
-	private void GetData(TestProto2 dd){
+	private void GetData(UserDataResultProto dd){
 
-		SuperDebug.Log ("GetData:" + dd.data);
+		SuperDebug.Log ("GetData:" + dd);
 	}
 }

@@ -169,11 +169,11 @@
  <Reference Include="UnityEngine.Networking">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
  </Reference>
- <Reference Include="SuperProto">
- <HintPath>C:/UnityProjects/XLand/XLand_client/XLand/Assets/Scripts/New Folder/SuperProto.dll</HintPath>
- </Reference>
  <Reference Include="XLand_proto">
- <HintPath>C:/UnityProjects/XLand/XLand_client/XLand/Assets/Scripts/New Folder/XLand_proto.dll</HintPath>
+ <HintPath>C:/UnityProjects/XLand/XLand_client/XLand/Assets/XLand_proto.dll</HintPath>
+ </Reference>
+ <Reference Include="SuperProto">
+ <HintPath>C:/UnityProjects/XLand/XLand_client/XLand/Assets/SuperProto.dll</HintPath>
  </Reference>
  <Reference Include="Mono.Cecil">
  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/Mono.Cecil.dll</HintPath>

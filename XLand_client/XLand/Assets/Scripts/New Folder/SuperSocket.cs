@@ -29,7 +29,7 @@ public class SuperSocket {
 
 	private static readonly int HEAD_LENGTH = 4;
 
-	private static readonly int BODY_LENGTH = 1024;
+	private static readonly int BODY_LENGTH = 10240;
 
 	private byte[] headBuffer = new byte[HEAD_LENGTH];
 
@@ -110,10 +110,14 @@ public class SuperSocket {
 
 	private void ReceiveHead(){
 
+		Debug.Log ("ReceiveHead!");
+
 		socket.BeginReceive (headBuffer, headOffset, headLength, SocketFlags.None, ReceiveHeadEnd, null);
 	}
 
 	private void ReceiveHeadEnd(IAsyncResult _result){
+
+		Debug.Log ("ReceiveHeadEnd!");
 
 		int length = socket.EndReceive (_result);
 
@@ -145,18 +149,22 @@ public class SuperSocket {
 
 	private void ReceiveBody(){
 
+		Debug.Log ("ReceiveBody!" + bodyLength);
+
 		socket.BeginReceive(bodyBuffer, bodyOffset, bodyLength, SocketFlags.None, ReceiveBodyEnd, null);
 	}
 
 	private void ReceiveBodyEnd(IAsyncResult _result){
 
 		int length = socket.EndReceive (_result);
+
+		Debug.Log ("ReceiveBodyEnd!" + length + "   " + bodyLength);
 		
 		if (length == 0) {
 			
 			SuperDebug.LogError ("Disconnect!!!");
 			
-		} else if (length < headLength) {
+		} else if (length < bodyLength) {
 			
 			bodyLength = bodyLength - length;
 			
@@ -165,14 +173,28 @@ public class SuperSocket {
 			ReceiveBody();
 			
 		} else {
+
+			Debug.Log ("all!" + length + "   " + bodyLength);
 			
 			receiveStream.Position = 0;
 			
 			receiveStream.Write(bodyBuffer, 0, bodyOffset + length);
 			
 			receiveStream.Position = 0;
-			
-			BaseProto data = reveiveFormatter.Deserialize(receiveStream) as BaseProto;
+
+			BaseProto data = null;
+
+			try{
+
+				data = reveiveFormatter.Deserialize(receiveStream) as BaseProto;
+
+			}catch(Exception e){
+
+
+				Debug.Log(e.ToString());
+			}
+
+			Debug.Log("receive:" + data.GetType().ToString());
 
 			switch(data.type){
 
@@ -183,6 +205,8 @@ public class SuperSocket {
 				return;
 
 			case PROTO_TYPE.S2C:
+
+
 
 				BaseProto sendData = null;
 
