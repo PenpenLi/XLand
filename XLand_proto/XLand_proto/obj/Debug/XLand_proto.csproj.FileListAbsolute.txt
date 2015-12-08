@@ -1,8 +1,0 @@
-C:\UnityProjects\XLand\XLand_proto\XLand_proto\bin\Debug\XLand_proto.dll
-C:\UnityProjects\XLand\XLand_proto\XLand_proto\bin\Debug\XLand_proto.pdb
-C:\UnityProjects\XLand\XLand_proto\XLand_proto\bin\Debug\SuperProto.dll
-C:\UnityProjects\XLand\XLand_proto\XLand_proto\bin\Debug\SuperProto.pdb
-C:\UnityProjects\XLand\XLand_proto\XLand_proto\obj\Debug\XLand_proto.csprojResolveAssemblyReference.cache
-C:\UnityProjects\XLand\XLand_proto\XLand_proto\obj\Debug\XLand_proto.dll
-C:\UnityProjects\XLand\XLand_proto\XLand_proto\obj\Debug\XLand_proto.pdb
-C:\UnityProjects\XLand\XLand_proto\XLand_proto\bin\Debug\XLand_proto.dll.config
