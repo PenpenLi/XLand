@@ -323,14 +323,14 @@ public class SuperSocket {
 		
 		sendStream.Position = 0;
 
-		socket.BeginSend(BitConverter.GetBytes(sendStream.GetBuffer().Length), 0, 4, SocketFlags.None, SendHeadEnd, null);
+		socket.BeginSend(BitConverter.GetBytes(sendStream.Length), 0, 4, SocketFlags.None, SendHeadEnd, null);
 	}
 
 	private void SendHeadEnd(IAsyncResult _result){
 
 		socket.EndSend (_result);
 
-		socket.BeginSend (sendStream.GetBuffer (), 0, sendStream.GetBuffer ().Length, SocketFlags.None, SendBodyEnd, null);
+		socket.BeginSend (sendStream.GetBuffer (), 0, (int)sendStream.Length, SocketFlags.None, SendBodyEnd, null);
 	}
 
 	private void SendBodyEnd(IAsyncResult _result){
